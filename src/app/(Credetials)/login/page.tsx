@@ -70,38 +70,15 @@ const LoginPage = () => {
               value="Sign in"
             />
           </div>
-          <p
-            onClick={() => {
-              const modal = document.getElementById(
-                "my_modal_5"
-              ) as HTMLDialogElement;
-              modal?.showModal();
-            }}
+          <Link href='/register'
             className="px-6 text-sm text-center dark:text-gray-600 cursor-pointer"
           >
             Don`t have an account yet?
             <span className="hover:underline dark:text-violet-600">Sign up</span>
             .
-          </p>
+          </Link>
         </div>
       </form>
-
-      <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
-        <div className="modal-box">
-          <h3 className="font-bold text-lg">Hello!</h3>
-          <h1>
-            <Link href="/teacher">Register As a teacher</Link>
-          </h1>
-          <h1>
-            <Link href="/student">Register As a student</Link>
-          </h1>
-          <div className="modal-action">
-            <form method="dialog">
-              <button className="btn">Close</button>
-            </form>
-          </div>
-        </div>
-      </dialog>
     </div>
   );
 };
