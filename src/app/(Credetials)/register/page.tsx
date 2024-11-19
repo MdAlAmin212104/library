@@ -1,6 +1,7 @@
-'use client';
+"use client";
 import Link from "next/link";
 import React, { useState } from "react";
+import bcrypt from 'bcryptjs'; // Import bcryptjs for hashing passwords
 
 const RegisterForm: React.FC = () => {
   const [formData, setFormData] = useState<{
@@ -106,24 +107,39 @@ const RegisterForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+  
+    // Validate form data
     const validationErrors = validate();
     setErrors(validationErrors);
-
+  
+    // If no validation errors
     if (Object.keys(validationErrors).length === 0) {
+      // Upload profile picture and get the URL
       const profilePictureUrl = await uploadImageToImgbb();
-
+  
+      // If the image URL is successfully retrieved
       if (profilePictureUrl) {
+        // Hash the password and confirmPassword before logging them
+        const hashedPassword = await bcrypt.hash(formData.password, 10); // Hash the password
+        //const hashedConfirmPassword = await bcrypt.hash(formData.confirmPassword, 10); // Hash the confirmPassword
+  
+        // Update form data with the uploaded profile picture URL
         setFormData((prevData) => ({
           ...prevData,
           profilePictureUrl,
         }));
-
-        // Submit form data with the uploaded image URL
-        console.log({ ...formData, profilePictureUrl });
-        alert("Form submitted successfully with image URL!");
+  
+        // Create the form value without confirmPassword, password, and profilePicture
+        const { password, confirmPassword, profilePicture, ...formValue } = formData;
+  
+        // Create a new object that includes hashedPassword, hashedConfirmPassword, profilePicture, and other form values
+        const formValueLink = { ...formValue, profilePictureUrl, hashedPassword };
+  
+        console.log("Form Data:", formValueLink);
       }
     }
   };
+  
 
   return (
     <div className="flex flex-col max-w-lg p-6 rounded-md sm:p-10 dark:bg-gray-50 dark:text-gray-800 mx-auto my-10">
@@ -155,7 +171,9 @@ const RegisterForm: React.FC = () => {
       <form className="space-y-4" onSubmit={handleSubmit}>
         {/* Name */}
         <div>
-          <label htmlFor="name" className="block mb-2 text-sm">Name</label>
+          <label htmlFor="name" className="block mb-2 text-sm">
+            Name
+          </label>
           <input
             type="text"
             name="name"
@@ -169,7 +187,9 @@ const RegisterForm: React.FC = () => {
 
         {/* Email */}
         <div>
-          <label htmlFor="email" className="block mb-2 text-sm">Email</label>
+          <label htmlFor="email" className="block mb-2 text-sm">
+            Email
+          </label>
           <input
             type="email"
             name="email"
@@ -183,7 +203,9 @@ const RegisterForm: React.FC = () => {
 
         {/* Phone Number */}
         <div>
-          <label htmlFor="phone" className="block mb-2 text-sm">Phone Number</label>
+          <label htmlFor="phone" className="block mb-2 text-sm">
+            Phone Number
+          </label>
           <input
             type="text"
             name="phone"
@@ -200,7 +222,9 @@ const RegisterForm: React.FC = () => {
           <>
             {/* ID Number */}
             <div>
-              <label htmlFor="idNumber" className="block mb-2 text-sm">ID Number</label>
+              <label htmlFor="idNumber" className="block mb-2 text-sm">
+                ID Number
+              </label>
               <input
                 type="text"
                 name="idNumber"
@@ -209,12 +233,16 @@ const RegisterForm: React.FC = () => {
                 placeholder="123456"
                 className="w-full px-3 py-2 border rounded-md dark:border-gray-300 dark:bg-gray-50 dark:text-gray-800"
               />
-              {errors.idNumber && <span className="text-red-500">{errors.idNumber}</span>}
+              {errors.idNumber && (
+                <span className="text-red-500">{errors.idNumber}</span>
+              )}
             </div>
 
             {/* Position */}
             <div>
-              <label htmlFor="position" className="block mb-2 text-sm">Position</label>
+              <label htmlFor="position" className="block mb-2 text-sm">
+                Position
+              </label>
               <select
                 name="position"
                 value={formData.position || ""}
@@ -224,21 +252,27 @@ const RegisterForm: React.FC = () => {
                 <option value="">Select Position</option>
                 <option value="Principal">Principal</option>
                 <option value="Vice_Principal">Vice Principal</option>
-                <option value="Head_of_Department (HOD)">Head of Department (HOD)</option>
+                <option value="Head_of_Department (HOD)">
+                  Head of Department (HOD)
+                </option>
                 <option value="Senior_Instructor">Senior Instructor</option>
                 <option value="Instructor">Instructor</option>
                 <option value="Junior_Instructor">Junior Instructor</option>
                 <option value="Workshop_Instructor">Workshop Instructor</option>
                 <option value="Lab_Technician">Lab Technician</option>
               </select>
-              {errors.position && <span className="text-red-500">{errors.position}</span>}
+              {errors.position && (
+                <span className="text-red-500">{errors.position}</span>
+              )}
             </div>
           </>
         ) : (
           <>
             {/* Roll Number */}
             <div>
-              <label htmlFor="roll" className="block mb-2 text-sm">Roll Number</label>
+              <label htmlFor="roll" className="block mb-2 text-sm">
+                Roll Number
+              </label>
               <input
                 type="text"
                 name="roll"
@@ -247,12 +281,16 @@ const RegisterForm: React.FC = () => {
                 placeholder="511189"
                 className="w-full px-3 py-2 border rounded-md dark:border-gray-300 dark:bg-gray-50 dark:text-gray-800"
               />
-              {errors.roll && <span className="text-red-500">{errors.roll}</span>}
+              {errors.roll && (
+                <span className="text-red-500">{errors.roll}</span>
+              )}
             </div>
 
             {/* Department */}
             <div>
-              <label htmlFor="department" className="block mb-2 text-sm">Department</label>
+              <label htmlFor="department" className="block mb-2 text-sm">
+                Department
+              </label>
               <select
                 name="department"
                 value={formData.department || ""}
@@ -262,18 +300,30 @@ const RegisterForm: React.FC = () => {
                 <option value="">Select Department</option>
                 <option value="Civil_Technology">Civil Technology</option>
                 <option value="Computer_Technology">Computer Technology</option>
-                <option value="Electrical_Technology">Electrical Technology</option>
-                <option value="Electronics_Technology">Electronics Technology</option>
-                <option value="Mechanical_Technology">Mechanical Technology</option>
+                <option value="Electrical_Technology">
+                  Electrical Technology
+                </option>
+                <option value="Electronics_Technology">
+                  Electronics Technology
+                </option>
+                <option value="Mechanical_Technology">
+                  Mechanical Technology
+                </option>
                 <option value="AIDT_Technology">AIDT Technology</option>
-                <option value="Construction_Technology">Construction Technology</option>
+                <option value="Construction_Technology">
+                  Construction Technology
+                </option>
               </select>
-              {errors.department && <span className="text-red-500">{errors.department}</span>}
+              {errors.department && (
+                <span className="text-red-500">{errors.department}</span>
+              )}
             </div>
 
             {/* Batch */}
             <div>
-              <label htmlFor="batch" className="block mb-2 text-sm">Batch</label>
+              <label htmlFor="batch" className="block mb-2 text-sm">
+                Batch
+              </label>
               <input
                 type="text"
                 name="batch"
@@ -282,14 +332,18 @@ const RegisterForm: React.FC = () => {
                 placeholder="2024"
                 className="w-full px-3 py-2 border rounded-md dark:border-gray-300 dark:bg-gray-50 dark:text-gray-800"
               />
-              {errors.batch && <span className="text-red-500">{errors.batch}</span>}
+              {errors.batch && (
+                <span className="text-red-500">{errors.batch}</span>
+              )}
             </div>
           </>
         )}
 
         {/* Password */}
         <div>
-          <label htmlFor="password" className="block mb-2 text-sm">Password</label>
+          <label htmlFor="password" className="block mb-2 text-sm">
+            Password
+          </label>
           <div className="relative">
             <input
               type={passwordVisible ? "text" : "password"}
@@ -307,12 +361,16 @@ const RegisterForm: React.FC = () => {
               {passwordVisible ? "👁️" : "👁️‍🗨️"}
             </button>
           </div>
-          {errors.password && <span className="text-red-500">{errors.password}</span>}
+          {errors.password && (
+            <span className="text-red-500">{errors.password}</span>
+          )}
         </div>
 
         {/* Confirm Password */}
         <div>
-          <label htmlFor="confirmPassword" className="block mb-2 text-sm">Confirm Password</label>
+          <label htmlFor="confirmPassword" className="block mb-2 text-sm">
+            Confirm Password
+          </label>
           <div className="relative">
             <input
               type={confirmPasswordVisible ? "text" : "password"}
