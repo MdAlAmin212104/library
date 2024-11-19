@@ -1,4 +1,5 @@
-'use client'
+'use client';
+import Link from "next/link";
 import React, { useState } from "react";
 
 const RegisterForm: React.FC = () => {
@@ -14,6 +15,7 @@ const RegisterForm: React.FC = () => {
     password: string;
     confirmPassword: string;
     profilePicture: File | null;
+    profilePictureUrl?: string;
   }>({
     name: "",
     email: "",
@@ -26,12 +28,14 @@ const RegisterForm: React.FC = () => {
     password: "",
     confirmPassword: "",
     profilePicture: null,
+    profilePictureUrl: "",
   });
 
   const [isTeacher, setIsTeacher] = useState(false); // State to toggle form type
   const [errors, setErrors] = useState<Partial<typeof formData>>({});
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  const [uploading, setUploading] = useState(false); // State for image upload status
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -66,14 +70,58 @@ const RegisterForm: React.FC = () => {
     return newErrors;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const uploadImageToImgbb = async () => {
+    if (!formData.profilePicture) return "";
+
+    const apiKey = "d8637d8095573a1f16781f672324dca2"; // Replace with your imgbb API key
+    const formDataToUpload = new FormData();
+    formDataToUpload.append("image", formData.profilePicture);
+
+    try {
+      setUploading(true);
+      const response = await fetch(
+        `https://api.imgbb.com/1/upload?key=${apiKey}`,
+        {
+          method: "POST",
+          body: formDataToUpload,
+        }
+      );
+
+      const result = await response.json();
+      setUploading(false);
+
+      if (result.success) {
+        return result.data.url;
+      } else {
+        alert("Image upload failed. Please try again.");
+        return "";
+      }
+    } catch (error) {
+      setUploading(false);
+      console.error("Error uploading image:", error);
+      alert("An error occurred while uploading the image.");
+      return "";
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const validationErrors = validate();
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length === 0) {
-      console.log(formData);
-      alert("Form submitted successfully!");
+      const profilePictureUrl = await uploadImageToImgbb();
+
+      if (profilePictureUrl) {
+        setFormData((prevData) => ({
+          ...prevData,
+          profilePictureUrl,
+        }));
+
+        // Submit form data with the uploaded image URL
+        console.log({ ...formData, profilePictureUrl });
+        alert("Form submitted successfully with image URL!");
+      }
     }
   };
 
@@ -175,13 +223,13 @@ const RegisterForm: React.FC = () => {
               >
                 <option value="">Select Position</option>
                 <option value="Principal">Principal</option>
-                <option value="Vice Principal">Vice Principal</option>
-                <option value="Head of Department (HOD)">Head of Department (HOD)</option>
-                <option value="Senior Instructor">Senior Instructor</option>
+                <option value="Vice_Principal">Vice Principal</option>
+                <option value="Head_of_Department (HOD)">Head of Department (HOD)</option>
+                <option value="Senior_Instructor">Senior Instructor</option>
                 <option value="Instructor">Instructor</option>
-                <option value="Junior Instructor">Junior Instructor</option>
-                <option value="Workshop Instructor">Workshop Instructor</option>
-                <option value="Lab Technician">Lab Technician</option>
+                <option value="Junior_Instructor">Junior Instructor</option>
+                <option value="Workshop_Instructor">Workshop Instructor</option>
+                <option value="Lab_Technician">Lab Technician</option>
               </select>
               {errors.position && <span className="text-red-500">{errors.position}</span>}
             </div>
@@ -212,13 +260,13 @@ const RegisterForm: React.FC = () => {
                 className="w-full px-3 py-2 border rounded-md dark:border-gray-300 dark:bg-gray-50 dark:text-gray-800"
               >
                 <option value="">Select Department</option>
-                <option value="Civil Technology">Civil Technology</option>
-                <option value="Computer Technology">Computer Technology</option>
-                <option value="Electrical Technology">Electrical Technology</option>
-                <option value="Electronics Technology">Electronics Technology</option>
-                <option value="Mechanical Technology">Mechanical Technology</option>
-                <option value="AIDT Technology">AIDT Technology</option>
-                <option value="Construction Technology">Construction Technology</option>
+                <option value="Civil_Technology">Civil Technology</option>
+                <option value="Computer_Technology">Computer Technology</option>
+                <option value="Electrical_Technology">Electrical Technology</option>
+                <option value="Electronics_Technology">Electronics Technology</option>
+                <option value="Mechanical_Technology">Mechanical Technology</option>
+                <option value="AIDT_Technology">AIDT Technology</option>
+                <option value="Construction_Technology">Construction Technology</option>
               </select>
               {errors.department && <span className="text-red-500">{errors.department}</span>}
             </div>
@@ -289,14 +337,19 @@ const RegisterForm: React.FC = () => {
 
         {/* Profile Picture */}
         <div>
-          <label htmlFor="profilePicture" className="block mb-2 text-sm">Profile Picture</label>
+          <label htmlFor="profilePicture" className="block mb-2 text-sm">
+            Profile Picture
+          </label>
           <input
             type="file"
             name="profilePicture"
+            accept="image/*"
             onChange={handleChange}
             className="w-full px-3 py-2 border rounded-md dark:border-gray-300 dark:bg-gray-50 dark:text-gray-800"
           />
         </div>
+
+        {uploading && <p>Uploading image...</p>}
 
         <button
           type="submit"
@@ -304,6 +357,13 @@ const RegisterForm: React.FC = () => {
         >
           Register
         </button>
+        <Link
+          href="/login"
+          className="px-6 text-sm text-center dark:text-gray-600 cursor-pointer"
+        >
+          Have an account yet?{" "}
+          <span className="hover:underline dark:text-violet-600">Sign in</span>.
+        </Link>
       </form>
     </div>
   );
