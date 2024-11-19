@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import React, { useState } from "react";
-import bcrypt from 'bcryptjs'; // Import bcryptjs for hashing passwords
+import bcrypt from "bcryptjs"; // Import bcryptjs for hashing passwords
 
 const RegisterForm: React.FC = () => {
   const [formData, setFormData] = useState<{
@@ -11,7 +11,6 @@ const RegisterForm: React.FC = () => {
     roll?: string;
     department?: string;
     batch?: string;
-    idNumber?: string;
     position?: string;
     password: string;
     confirmPassword: string;
@@ -24,7 +23,6 @@ const RegisterForm: React.FC = () => {
     roll: "",
     department: "",
     batch: "",
-    idNumber: "",
     position: "",
     password: "",
     confirmPassword: "",
@@ -56,7 +54,6 @@ const RegisterForm: React.FC = () => {
     if (!formData.phone) newErrors.phone = "Phone number is required";
 
     if (isTeacher) {
-      if (!formData.idNumber) newErrors.idNumber = "ID Number is required";
       if (!formData.position) newErrors.position = "Position is required";
     } else {
       if (!formData.roll) newErrors.roll = "Roll number is required";
@@ -107,39 +104,66 @@ const RegisterForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     // Validate form data
     const validationErrors = validate();
     setErrors(validationErrors);
-  
+
     // If no validation errors
     if (Object.keys(validationErrors).length === 0) {
       // Upload profile picture and get the URL
       const profilePictureUrl = await uploadImageToImgbb();
-  
+
       // If the image URL is successfully retrieved
       if (profilePictureUrl) {
-        // Hash the password and confirmPassword before logging them
-        const hashedPassword = await bcrypt.hash(formData.password, 10); // Hash the password
-        //const hashedConfirmPassword = await bcrypt.hash(formData.confirmPassword, 10); // Hash the confirmPassword
-  
+        // Hash the password before logging it (consider hashing on the server side for security reasons)
+        const hashedPassword = await bcrypt.hash(formData.password, 10);
+
         // Update form data with the uploaded profile picture URL
         setFormData((prevData) => ({
           ...prevData,
           profilePictureUrl,
         }));
-  
-        // Create the form value without confirmPassword, password, and profilePicture
+
+        // Create the form value without confirmPassword and profilePicture
         const { password, confirmPassword, profilePicture, ...formValue } = formData;
-  
-        // Create a new object that includes hashedPassword, hashedConfirmPassword, profilePicture, and other form values
-        const formValueLink = { ...formValue, profilePictureUrl, hashedPassword };
-  
+
+        // Ensure password and confirmPassword match before proceeding
+        if (formData.password !== formData.confirmPassword) {
+          setErrors({ confirmPassword: "Passwords do not match" });
+          return;
+        }
+
+        // Create the form value with hashedPassword and profilePictureUrl
+        const formValueLink = {
+          ...formValue,
+          profilePictureUrl,
+          hashedPassword,
+        };
+
         console.log("Form Data:", formValueLink);
+
+        try {
+          const response = await fetch('http://localhost:3000/register/api', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formValueLink),
+          });
+
+          const result = await response.json();
+          console.log(result);
+        } catch (error) {
+          console.error('Error:', error);
+        }
       }
     }
-  };
-  
+};
+
+
+
+
 
   return (
     <div className="flex flex-col max-w-lg p-6 rounded-md sm:p-10 dark:bg-gray-50 dark:text-gray-800 mx-auto my-10">
@@ -217,26 +241,27 @@ const RegisterForm: React.FC = () => {
           {errors.phone && <span className="text-red-500">{errors.phone}</span>}
         </div>
 
+        {/* ID Number */}
+        <div>
+          <label htmlFor="idNumber" className="block mb-2 text-sm">
+            {isTeacher ? 'ID Number': 'Roll Number'}
+          </label>
+          <input
+            type="text"
+            name="roll"
+            value={formData.roll || ""}
+            onChange={handleChange}
+            placeholder="123456"
+            className="w-full px-3 py-2 border rounded-md dark:border-gray-300 dark:bg-gray-50 dark:text-gray-800"
+          />
+          {errors.roll && (
+            <span className="text-red-500">{errors.roll}</span>
+          )}
+        </div>
+
         {/* Conditional Fields */}
         {isTeacher ? (
           <>
-            {/* ID Number */}
-            <div>
-              <label htmlFor="idNumber" className="block mb-2 text-sm">
-                ID Number
-              </label>
-              <input
-                type="text"
-                name="idNumber"
-                value={formData.idNumber || ""}
-                onChange={handleChange}
-                placeholder="123456"
-                className="w-full px-3 py-2 border rounded-md dark:border-gray-300 dark:bg-gray-50 dark:text-gray-800"
-              />
-              {errors.idNumber && (
-                <span className="text-red-500">{errors.idNumber}</span>
-              )}
-            </div>
 
             {/* Position */}
             <div>
@@ -268,23 +293,6 @@ const RegisterForm: React.FC = () => {
           </>
         ) : (
           <>
-            {/* Roll Number */}
-            <div>
-              <label htmlFor="roll" className="block mb-2 text-sm">
-                Roll Number
-              </label>
-              <input
-                type="text"
-                name="roll"
-                value={formData.roll || ""}
-                onChange={handleChange}
-                placeholder="511189"
-                className="w-full px-3 py-2 border rounded-md dark:border-gray-300 dark:bg-gray-50 dark:text-gray-800"
-              />
-              {errors.roll && (
-                <span className="text-red-500">{errors.roll}</span>
-              )}
-            </div>
 
             {/* Department */}
             <div>
