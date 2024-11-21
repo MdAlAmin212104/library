@@ -1,7 +1,6 @@
 "use client";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
@@ -13,7 +12,7 @@ type Inputs = {
 
 const LoginPage = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const path =useRouter()
+
 
   const {
     register,

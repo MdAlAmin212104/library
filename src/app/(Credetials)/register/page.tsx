@@ -2,6 +2,8 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import bcrypt from "bcryptjs"; // Import bcryptjs for hashing passwords
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/router";
 
 const RegisterForm: React.FC = () => {
   const [formData, setFormData] = useState<{
@@ -141,7 +143,6 @@ const RegisterForm: React.FC = () => {
           hashedPassword,
         };
 
-        console.log("Form Data:", formValueLink);
 
         try {
           const response = await fetch('http://localhost:3000/register/api', {
@@ -153,13 +154,26 @@ const RegisterForm: React.FC = () => {
           });
 
           const result = await response.json();
-          console.log(result);
+          if (result.user.insertedId) {
+            // Attempt to sign in the user after registration
+            const loginResponse = await signIn('credentials', {
+              redirect: false, // Prevent automatic redirect from NextAuth
+              roll: formData.roll, // Adjust this based on your user object structure
+              password: formData.password,
+            });
+  
+            if (loginResponse?.ok) {
+              alert('Success to Register');
+            } else {
+              console.error('Login failed');
+            }
+          }
         } catch (error) {
           console.error('Error:', error);
         }
       }
     }
-};
+  };
 
 
 

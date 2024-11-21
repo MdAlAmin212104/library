@@ -5,6 +5,7 @@ import Navbar from "./components/shared/Navbar";
 import Footer from "./components/shared/Footer";
 import AuthProvider from "./services/SessionProvider";
 
+
 // Load custom fonts
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,20 +30,20 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Check if the code is running on the client
-  //const isClient = typeof window !== "undefined";
+  
 
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* Conditionally render Navbar and Footer only if on the client */}
+        
         <AuthProvider>
           <Navbar />
           {children}
           <Footer />
         </AuthProvider>
+        
         
       </body>
     </html>
