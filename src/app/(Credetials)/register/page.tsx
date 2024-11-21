@@ -71,7 +71,7 @@ const RegisterForm: React.FC = () => {
   const uploadImageToImgbb = async () => {
     if (!formData.profilePicture) return "";
 
-    const apiKey = "d8637d8095573a1f16781f672324dca2"; // Replace with your imgbb API key
+    const apiKey = process.env.NEXT_PUBLIC_IMGBB_API; // Replace with your imgbb API key
     const formDataToUpload = new FormData();
     formDataToUpload.append("image", formData.profilePicture);
 

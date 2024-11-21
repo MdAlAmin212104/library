@@ -1,7 +1,10 @@
 "use client";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+
 
 type Inputs = {
   roll: string;
@@ -10,6 +13,7 @@ type Inputs = {
 
 const LoginPage = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const path =useRouter()
 
   const {
     register,
@@ -17,7 +21,20 @@ const LoginPage = () => {
     formState: { errors },
   } = useForm<Inputs>();
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    const {roll, password} = data;
+    try {
+      const resp = await signIn("credentials", {
+        roll,
+        password,
+        redirect : false,
+      });
+      
+    } catch (err) {
+      console.log(err);
+    }
+    
+  }
 
   return (
     <div className="flex flex-col max-w-md p-6 rounded-md sm:p-10 dark:bg-gray-50 dark:text-gray-800 mx-auto my-10">

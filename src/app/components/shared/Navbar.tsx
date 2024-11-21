@@ -1,9 +1,12 @@
+'use client'
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
 const Navbar = () => {
-
+  const session = useSession()
+  console.log(session, "this is navbar sessions");
     const link = <>
         <li><Link href='/'>Home</Link></li>
         <li><Link href='/bookList'>Book Catalog</Link></li>
