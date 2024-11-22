@@ -1,14 +1,16 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import bcrypt from "bcryptjs"; // Import bcryptjs for hashing passwords
 import { signIn } from "next-auth/react";
 import { UserRegister } from "@/app/type";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import {addData } from '../../features/user/userSlices';
+import { useRouter } from "next/navigation";
 
 const RegisterForm: React.FC = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState<UserRegister>({
     name: "",
     email: "",
@@ -29,6 +31,7 @@ const RegisterForm: React.FC = () => {
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [uploading, setUploading] = useState(false); // State for image upload status
   const dispatch = useDispatch<AppDispatch>();
+  
   //const { items, status, error } = useSelector((state: RootState) => state.data);
 
   const handleChange = (
@@ -150,37 +153,13 @@ const RegisterForm: React.FC = () => {
           profilePicture: null,
           profilePictureUrl: "",
         })
-
-        // try {
-        //   const response = await fetch('http://localhost:3000/register/api', {
-        //     method: 'POST',
-        //     headers: {
-        //       'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify(formValueLink),
-        //   });
-
-        //   const result = await response.json();
-        //   if (result.user.insertedId) {
-        //     // Attempt to sign in the user after registration
-        //     const loginResponse = await signIn('credentials', {
-        //       redirect: false, // Prevent automatic redirect from NextAuth
-        //       roll: formData.roll, // Adjust this based on your user object structure
-        //       password: formData.password,
-        //     });
-  
-        //     if (loginResponse?.ok) {
-        //       alert('Success to Register');
-        //     } else {
-        //       console.error('Login failed');
-        //     }
-        //   }
-        // } catch (error) {
-        //   console.error('Error:', error);
-        // }
+        // Redirect to login page after successful registration
+        router.push("/login");
       }
     }
   };
+
+
 
 
 

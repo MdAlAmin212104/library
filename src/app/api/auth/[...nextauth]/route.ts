@@ -1,16 +1,16 @@
 import { connect } from "@/app/lib/ConnectDB";
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs"; // Import bcryptjs for hashing passwords
 
-// Define the User type based on your schema
-interface User {
-  _id: string;
-  roll: string;
-  hashedPassword: string;
-  name: string;
-  // Add any other fields from your user schema
-}
+// // Define the User type based on your schema
+// interface User {
+//   _id: string;
+//   roll: string;
+//   hashedPassword: string;
+//   name: string;
+//   // Add any other fields from your user schema
+// }
 
 const handler = NextAuth({
   session: {

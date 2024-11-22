@@ -1,6 +1,7 @@
 "use client";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
@@ -11,6 +12,7 @@ type Inputs = {
 };
 
 const LoginPage = () => {
+  const router = useRouter();
   const [passwordVisible, setPasswordVisible] = useState(false);
 
 
@@ -28,6 +30,10 @@ const LoginPage = () => {
         password,
         redirect : false,
       });
+      if(resp.status === 200) {
+        // Redirect to home page
+        router.push("/");
+      }
       
     } catch (err) {
       console.log(err);

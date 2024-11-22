@@ -46,7 +46,7 @@ const dataSlice = createSlice({
       .addCase(fetchData.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(fetchData.fulfilled, (state, action: PayloadAction<IData[]>) => {
+      .addCase(fetchData.fulfilled, (state, action: PayloadAction<UserRegister[]>) => {
         state.status = 'succeeded';
         state.items = action.payload;
       })
@@ -54,8 +54,16 @@ const dataSlice = createSlice({
         state.status = 'failed';
         state.error = action.error.message || 'Something went wrong';
       })
-      .addCase(addData.fulfilled, (state, action: PayloadAction<IData>) => {
+      .addCase(addData.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(addData.fulfilled, (state, action: PayloadAction<UserRegister>) => {
+        state.status = 'succeeded';
         state.items.push(action.payload);
+      })
+      .addCase(addData.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
       });
   },
 });
