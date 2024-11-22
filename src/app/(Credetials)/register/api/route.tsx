@@ -2,6 +2,19 @@
 import { connect } from "@/app/lib/ConnectDB";
 import { NextRequest } from "next/server";
 
+export const GET = async () => {
+    try {
+        const db = await connect();
+        const userCollection = db?.collection('users');
+        const users = await userCollection?.find().toArray();
+        return Response.json(users);
+    } catch (error: any) {
+        console.error('Error user list not found:', error);
+        return Response.json({massage: 'Error get user list'});
+    }
+    
+}
+
 export const POST = async (req: NextRequest) => {
     const newUser = await req.json();
     try {
@@ -18,3 +31,5 @@ export const POST = async (req: NextRequest) => {
         return Response.json({massage: 'Error registering user'});
     }
 }
+
+

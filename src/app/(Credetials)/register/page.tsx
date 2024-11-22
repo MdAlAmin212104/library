@@ -3,22 +3,13 @@ import Link from "next/link";
 import React, { useState } from "react";
 import bcrypt from "bcryptjs"; // Import bcryptjs for hashing passwords
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/router";
+import { UserRegister } from "@/app/type";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store";
+import {addData } from '../../features/user/userSlices';
 
 const RegisterForm: React.FC = () => {
-  const [formData, setFormData] = useState<{
-    name: string;
-    email: string;
-    phone: string;
-    roll?: string;
-    department?: string;
-    batch?: string;
-    position?: string;
-    password: string;
-    confirmPassword: string;
-    profilePicture: File | null;
-    profilePictureUrl?: string;
-  }>({
+  const [formData, setFormData] = useState<UserRegister>({
     name: "",
     email: "",
     phone: "",
@@ -37,6 +28,8 @@ const RegisterForm: React.FC = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [uploading, setUploading] = useState(false); // State for image upload status
+  const dispatch = useDispatch<AppDispatch>();
+  //const { items, status, error } = useSelector((state: RootState) => state.data);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -137,40 +130,54 @@ const RegisterForm: React.FC = () => {
         }
 
         // Create the form value with hashedPassword and profilePictureUrl
-        const formValueLink = {
+        const formValueLink: UserRegister = {
           ...formValue,
           profilePictureUrl,
           hashedPassword,
         };
 
+        dispatch(addData(formValueLink))
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          roll: "",
+          department: "",
+          batch: "",
+          position: "",
+          password: "",
+          confirmPassword: "",
+          profilePicture: null,
+          profilePictureUrl: "",
+        })
 
-        try {
-          const response = await fetch('http://localhost:3000/register/api', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formValueLink),
-          });
+        // try {
+        //   const response = await fetch('http://localhost:3000/register/api', {
+        //     method: 'POST',
+        //     headers: {
+        //       'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify(formValueLink),
+        //   });
 
-          const result = await response.json();
-          if (result.user.insertedId) {
-            // Attempt to sign in the user after registration
-            const loginResponse = await signIn('credentials', {
-              redirect: false, // Prevent automatic redirect from NextAuth
-              roll: formData.roll, // Adjust this based on your user object structure
-              password: formData.password,
-            });
+        //   const result = await response.json();
+        //   if (result.user.insertedId) {
+        //     // Attempt to sign in the user after registration
+        //     const loginResponse = await signIn('credentials', {
+        //       redirect: false, // Prevent automatic redirect from NextAuth
+        //       roll: formData.roll, // Adjust this based on your user object structure
+        //       password: formData.password,
+        //     });
   
-            if (loginResponse?.ok) {
-              alert('Success to Register');
-            } else {
-              console.error('Login failed');
-            }
-          }
-        } catch (error) {
-          console.error('Error:', error);
-        }
+        //     if (loginResponse?.ok) {
+        //       alert('Success to Register');
+        //     } else {
+        //       console.error('Login failed');
+        //     }
+        //   }
+        // } catch (error) {
+        //   console.error('Error:', error);
+        // }
       }
     }
   };
