@@ -8,7 +8,7 @@ export const GET = async () => {
         const userCollection = db?.collection('users');
         const users = await userCollection?.find().toArray();
         return Response.json(users);
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error user list not found:', error);
         return Response.json({massage: 'Error get user list'});
     }

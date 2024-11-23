@@ -4,7 +4,7 @@ import Image from "next/image";
 import React from "react";
 import { useRouter } from "next/navigation"; // For back button navigation
 
-interface User {
+export interface User {
   name: string;
   phone?: string;
   roll?: string;
