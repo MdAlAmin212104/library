@@ -81,7 +81,34 @@ const Navbar = () => {
         <span className="badge badge-sm indicator-item">8</span>
       </div>
       </button>
-      <span className="btn btn-primary" onClick={()=> signOut()}>LogOut</span>
+            <div className="dropdown dropdown-end">
+              <div
+                tabIndex={0}
+                role="button"
+                className="btn btn-ghost btn-circle avatar"
+              >
+                <div className="w-10 rounded-full">
+                  <Image width={50} height={50}
+                    src={ session?.data.user.photo ||
+                      "https://lh3.googleusercontent.com/a/ACg8ocKfSrgZFBvoQ6s12ZB8gHSg3E625KGpnaiYthDiKIfNqh1g62wg=s96-c"
+                    }
+                    alt='profile photo'
+                  />
+                </div>
+              </div>
+               <ul
+        tabIndex={0}
+        className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+        <li>
+          <Link href='/profile' className="justify-between">
+            Profile
+            <span className="badge">New</span>
+          </Link>
+        </li>
+        <li><Link href='/dashboard'>Dashboard</Link></li>
+        <li><span onClick={()=>signOut()}>Logout</span></li>
+      </ul>
+            </div>
         </>
         
       }

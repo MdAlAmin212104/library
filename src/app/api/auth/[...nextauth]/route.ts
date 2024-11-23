@@ -68,6 +68,11 @@ const handler = NextAuth({
       token.name = user.name;
       token.roll = user.roll;
       token.photo = user.profilePictureUrl;
+      token.phone = user.phone;
+      token.department = user.department;
+      token.position = user.position;
+      token.batch = user.batch;
+
     }
     return token;
   },
@@ -77,6 +82,10 @@ const handler = NextAuth({
       session.user.name = token.name;
       session.user.roll = token.roll;
       session.user.photo = token.photo;
+      session.user.phone = token.phone;
+      session.user.department = token.department;
+      session.user.position = token.position;
+      session.user.batch = token.batch; 
     }
     return session;
   },
