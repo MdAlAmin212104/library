@@ -1,20 +1,21 @@
 import { connect } from "@/app/lib/ConnectDB";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs"; // Import bcryptjs for hashing passwords
+import bcrypt from "bcryptjs"; // Import bcryptjs for password comparison
 
-// // Define the User type based on your schema
-// interface User {
-//   _id: string;
-//   roll: string;
-//   hashedPassword: string;
-//   name: string;
-//   // Add any other fields from your user schema
-// }
+// Define the User type based on your schema
+interface User {
+  _id: string;
+  roll: string;
+  hashedPassword: string;
+  name: string;
+  photo?: string;
+  // Add any other fields from your user schema
+}
 
 const handler = NextAuth({
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   providers: [
@@ -23,42 +24,65 @@ const handler = NextAuth({
         roll: {},
         password: {},
       },
-      async authorize(credentials: { roll: string; password: string } | null) {
-        // Check if credentials exist
+      async authorize(credentials) {
         if (!credentials) return null;
 
         const { roll, password } = credentials;
 
-        // If roll or password is missing, return null
-        if (!roll || !password) return null;
+        // Validate input
+        if (!roll || !password) {
+          console.error("Missing roll or password");
+          return null;
+        }
 
-          const db = await connect(); // Make sure connect is typed correctly
-          const currentUser = await db.collection("users").findOne({ roll });
-          
+        try {
+          const db = await connect(); // Connect to the database
+          const currentUser: User | null = await db.collection("users").findOne({ roll });
 
-          // If no user found
+          // Check if user exists
           if (!currentUser) {
+            console.error("User not found");
             return null;
           }
-          //console.log(password, 'this is a new password', currentUser.password, 'user password');
 
-          // Compare the provided password with the stored hashed password
-          const passwordMatched = bcrypt.compare(
-            password,
-            currentUser.hashedPassword
-        );
-
-          // If passwords do not match, return null
+          // Compare provided password with the stored hashed password
+          const passwordMatched = await bcrypt.compare(password, currentUser.hashedPassword);
           if (!passwordMatched) {
+            console.error("Invalid password");
             return null;
           }
+
+          // Return the user object
           return currentUser;
+        } catch (error) {
+          console.error("Error in authorization:", error);
+          return null;
+        }
       },
     }),
   ],
-  callbacks: {},
+  callbacks: {
+  async jwt({ token, user }) {
+    if (user) {
+      token.id = user._id;
+      token.name = user.name;
+      token.roll = user.roll;
+      token.photo = user.profilePictureUrl;
+    }
+    return token;
+  },
+  async session({ session, token }) {
+    if (token) {
+      session.user.id = token.id;
+      session.user.name = token.name;
+      session.user.roll = token.roll;
+      session.user.photo = token.photo;
+    }
+    return session;
+  },
+},
   pages: {
-    signIn: "/login",
+    signIn: "/login", // Redirect to your login page
   },
 });
 

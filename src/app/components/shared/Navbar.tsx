@@ -1,12 +1,12 @@
 'use client'
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
 const Navbar = () => {
-  const session = useSession()
-  console.log(session, "this is navbar sessions");
+  const session = useSession();
+  console.log(session);
     const link = <>
         <li><Link href='/'>Home</Link></li>
         <li><Link href='/bookList'>Book Catalog</Link></li>
@@ -55,7 +55,15 @@ const Navbar = () => {
         </ul>
       </div>
       <div className="navbar-end space-x-4">
-      <button className="btn btn-ghost btn-circle">
+      {
+        session?.status === 'loading' && <h6>Loading....</h6>
+      }
+      {session?.status === 'unauthenticated' &&
+      <Link href='/login' className="btn btn-primary">Login</Link>}
+      {
+        session?.status === 'authenticated' &&
+        <>
+        <button className="btn btn-ghost btn-circle">
       <div className="indicator">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -72,8 +80,12 @@ const Navbar = () => {
         {/* <span className="badge badge-xs badge-primary indicator-item"></span> */}
         <span className="badge badge-sm indicator-item">8</span>
       </div>
-    </button>
-        <Link href='/login' className="btn">Login</Link>
+      </button>
+      <span className="btn btn-primary" onClick={()=> signOut()}>LogOut</span>
+        </>
+        
+      }
+      
       </div>
     </div>
     </div>
