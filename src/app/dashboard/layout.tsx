@@ -1,4 +1,4 @@
-// app/dashboard/layout.tsx
+
 import Slider from "../components/Slider-dashboard";
 
 export default function DashboardLayout({
@@ -6,6 +6,7 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  
   return (
     <>
       <div className="md:flex">

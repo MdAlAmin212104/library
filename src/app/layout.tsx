@@ -24,6 +24,7 @@ const geistMono = localFont({
 export default function RootLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isDashboard = pathname.includes("dashboard");
+ 
 
   return (
     <html lang="en">
