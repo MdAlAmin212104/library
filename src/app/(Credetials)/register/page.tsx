@@ -23,6 +23,7 @@ const RegisterForm: React.FC = () => {
     confirmPassword: "",
     profilePicture: null,
     profilePictureUrl: "",
+    role: "",
   });
 
   const [isTeacher, setIsTeacher] = useState(false); // State to toggle form type
@@ -137,7 +138,9 @@ const RegisterForm: React.FC = () => {
           ...formValue,
           profilePictureUrl,
           hashedPassword,
+          role: isTeacher? "teacher" : "student",
         };
+        console.log(formValueLink, "Password and confirmPassword");
 
         dispatch(addData(formValueLink))
         setFormData({
@@ -152,6 +155,7 @@ const RegisterForm: React.FC = () => {
           confirmPassword: "",
           profilePicture: null,
           profilePictureUrl: "",
+          role: "",
         })
         // Redirect to login page after successful registration
         router.push("/login");

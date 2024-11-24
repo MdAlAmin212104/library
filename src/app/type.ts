@@ -11,5 +11,6 @@ export interface UserRegister {
     profilePicture?: File | null;
     profilePictureUrl?: string;
     hashedPassword?: string;
+    role: string;
     
 }
