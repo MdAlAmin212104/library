@@ -58,8 +58,8 @@ const ProfilePage = () => {
             <p>Phone: {phone || "N/A"}</p>
             {
                 batch ? <>
-                    <p>Batch : {batch}</p>
                     <p>Roll : {roll}</p>
+                    <p>Batch : {batch}</p>
                 </> : <p>Id : {roll}</p>
             }
             

@@ -1,6 +1,5 @@
 // app/dashboard/layout.tsx
 import Slider from "../components/Slider-dashboard";
-import RootLayout from "../layout"; // Import the general layout
 
 export default function DashboardLayout({
   children,
@@ -8,8 +7,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <RootLayout pageType="dashboard">
-      <div className="flex">
+    <>
+      <div className="md:flex">
         {/* Sidebar */}
         <Slider />
         <div className='flex-1 md:ml-64'>
@@ -19,6 +18,6 @@ export default function DashboardLayout({
           </div>
         </div>
       </div>
-    </RootLayout>
+    </>
   );
 }

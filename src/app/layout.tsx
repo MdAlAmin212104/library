@@ -1,5 +1,7 @@
-'use client'
+"use client";
+
 import { ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import localFont from "next/font/local";
 import "./globals.css";
 import Navbar from "./components/shared/Navbar";
@@ -8,7 +10,6 @@ import AuthProvider from "./services/SessionProvider";
 import { Provider } from "react-redux";
 import { store } from "@/redux/store";
 
-// Load custom fonts
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -20,14 +21,10 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-// Root layout component
-export default function RootLayout({
-  children,
-  pageType = "general",
-}: {
-  children: ReactNode;
-  pageType?: "general" | "dashboard";
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const isDashboard = pathname.includes("dashboard");
+
   return (
     <html lang="en">
       <body
@@ -35,9 +32,9 @@ export default function RootLayout({
       >
         <Provider store={store}>
           <AuthProvider>
-            {pageType === "general" && <Navbar />}
-            {children}
-            {pageType === "general" && <Footer />}
+            {!isDashboard && <Navbar />}
+            <main>{children}</main>
+            {!isDashboard && <Footer />}
           </AuthProvider>
         </Provider>
       </body>

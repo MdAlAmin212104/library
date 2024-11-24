@@ -5,6 +5,7 @@ import { GrLogout } from "react-icons/gr";
 import { useState } from "react";
 import { FaHome } from "react-icons/fa";
 import Link from "next/link";
+import { signOut } from "next-auth/react";
 
 const Slider: React.FC = () => {
   const [isActive, setActive] = useState<boolean>(false);
@@ -13,8 +14,9 @@ const Slider: React.FC = () => {
     setActive(!isActive);
   };
 
-  const handleLogout = (): void => {
-    console.log("User logged out");
+  const handleLogout = async() => {
+    await signOut();
+
   };
 
   return (
