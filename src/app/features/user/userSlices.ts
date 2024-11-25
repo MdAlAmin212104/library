@@ -15,13 +15,24 @@ interface DataState {
 // Initial state
 const initialState: DataState = {
   items: [],
+  totalPages: 0,
+  currentPage: 1,
   status: 'idle',
   error: null,
 };
 
 // Async Thunks
-export const fetchData = createAsyncThunk<UserRegister[]>('data/fetchData', async () => {
-  const response = await axios.get(`${baseUrl}/dashboard/userList/api`);
+// export const fetchData = createAsyncThunk<UserRegister[]>('data/fetchData', async () => {
+//   const response = await axios.get(`${baseUrl}/dashboard/userList/api`);
+//   return response.data;
+// });
+
+export const fetchData = createAsyncThunk<
+  { users: UserRegister[]; totalPages: number; currentPage: number },
+  { page: number; limit: number }
+>('data/fetchData', async ({ page, limit }) => {
+  const response = await axios.get(`${baseUrl}/dashboard/userList/api?page=${page}&limit=${limit}`);
+  console.log(response.data)
   return response.data;
 });
 
@@ -30,7 +41,7 @@ export const addData = createAsyncThunk<UserRegister, UserRegister>('data/addDat
     try {
         const response = await axios.post(`${baseUrl}/register/api`, newData);
         return response.data;
-    } catch (error: any) {
+    } catch (error: void) {
         // Handle error with rejectWithValue
         return rejectWithValue(error.response?.data || 'Failed to add data');
     }
@@ -47,25 +58,16 @@ const dataSlice = createSlice({
       .addCase(fetchData.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(fetchData.fulfilled, (state, action: PayloadAction<UserRegister[]>) => {
+      .addCase(fetchData.fulfilled, (state, action: PayloadAction<{ users: UserRegister[]; totalPages: number; currentPage: number }>) => {
         state.status = 'succeeded';
-        state.items = action.payload;
+        state.items = action.payload.users;
+        state.totalPages = action.payload.totalPages;
+        state.currentPage = action.payload.currentPage;
       })
       .addCase(fetchData.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message || 'Something went wrong';
       })
-      // .addCase(fetchUserData.pending, (state) => {
-      //   state.status = 'loading';
-      // })
-      // .addCase(fetchUserData.fulfilled, (state, action: PayloadAction<UserRegister[]>) => {
-      //   state.status = 'succeeded';
-      //   state.items = action.payload;
-      // })
-      // .addCase(fetchUserData.rejected, (state, action) => {
-      //   state.status = 'failed';
-      //   state.error = action.error.message || 'Something went wrong';
-      // })
       .addCase(addData.pending, (state) => {
         state.status = 'loading';
       })

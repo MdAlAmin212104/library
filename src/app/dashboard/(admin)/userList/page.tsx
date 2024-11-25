@@ -3,25 +3,24 @@ import { fetchData } from '@/app/features/user/userSlices';
 import { UserRegister } from '@/app/type';
 import { AppDispatch, RootState } from '@/redux/store';
 import Image from 'next/image';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
-type User = {
-  _id: string;
-  name: string;
-  email: string;
-  profilePictureUrl?: string;
-};
 
 const UserList: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  // Typed useSelector return
-  const { items, status, error } = useSelector((state: RootState) => state.data);
+  const { items, totalPages, status, error } = useSelector((state: RootState) => state.data);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
 
   useEffect(() => {
-    dispatch(fetchData());
-  }, [dispatch]);
+    dispatch(fetchData({ page: currentPage, limit: itemsPerPage }));
+  }, [dispatch, currentPage]);
 
   return (
     <div>
@@ -29,73 +28,95 @@ const UserList: React.FC = () => {
       {status === 'failed' && <p>Error: {error}</p>}
 
       <h1 className="text-center font-bold text-4xl my-6">
-        User List {items.length}
+        User List ({Array.isArray(items) ? items.length : 0})
       </h1>
 
-      <div className="overflow-x-auto">
-        <table className="table">
-          {/* Table Head */}
-          <thead>
-            <tr>
-              <th>
-                <label>
-                  <input type="checkbox" className="checkbox" />
-                </label>
-              </th>
-              <th>Name</th>
-              <th>Job</th>
-              <th>Favorite Color</th>
-              <th></th>
-            </tr>
-          </thead>
-
-          {/* Table Body */}
-          <tbody>
-            {items.map((user: UserRegister) => (
-              <tr key={user._id}>
+      {Array.isArray(items) && items.length > 0 ? (
+        <div className="overflow-x-auto">
+          <table className="table">
+            <thead>
+              <tr>
                 <th>
-                  <label>
-                    <input type="checkbox" className="checkbox" />
-                  </label>
+                  <input type="checkbox" className="checkbox" />
                 </th>
-                <td>
-                  <div className="flex items-center gap-3">
-                    <div className="avatar">
-                      <div className="mask mask-squircle h-12 w-12">
-                        <Image
-                          width={50}
-                          height={50}
-                          src={
-                            user.profilePictureUrl ||
-                            'https://img.daisyui.com/images/profile/demo/2@94.webp'
-                          }
-                          alt={`${user.name}'s Avatar`}
-                        />
+                <th>Name</th>
+                <th>Job</th>
+                <th>Favorite Color</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((user: UserRegister) => (
+                <tr key={user._id}>
+                  <th>
+                    <input type="checkbox" className="checkbox" />
+                  </th>
+                  <td>
+                    <div className="flex items-center gap-3">
+                      <div className="avatar">
+                        <div className="mask mask-squircle h-12 w-12">
+                          <Image
+                            width={50}
+                            height={50}
+                            src={
+                              user.profilePictureUrl ||
+                              'https://img.daisyui.com/images/profile/demo/2@94.webp'
+                            }
+                            alt={`${user.name}'s Avatar`}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <div className="font-bold">{user.name}</div>
+                        <div className="text-sm opacity-50">{user.email}</div>
+                        <div className="text-sm opacity-50">{user.phone}</div>
                       </div>
                     </div>
-                    <div>
-                      <div className="font-bold">{user.name}</div>
-                      <div className="text-sm opacity-50">{user.email}</div>
-                      <div className="text-sm opacity-50">{user.phone}</div>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  Zemlak, Daniel and Leannon
-                  <br />
-                  <span className="badge badge-ghost badge-sm">
-                    Desktop Support Technician
-                  </span>
-                </td>
-                <td>Purple</td>
-                <th>
-                  <button className="btn btn-ghost btn-xs">details</button>
-                </th>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                  </td>
+                  <td>
+                    {user.department || user.position}
+                    <br />
+                    <span className="badge badge-ghost badge-sm">
+                      {user.roll}
+                    </span>
+                  </td>
+                  <td>Purple</td>
+                  <th>
+                    <button className="btn btn-ghost btn-xs">Details</button>
+                  </th>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Pagination Controls */}
+          <div className="mt-4 flex justify-center">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => handlePageChange(currentPage - 1)}
+              className="btn btn-outline btn-sm mr-2"
+            >
+              Previous
+            </button>
+
+            <span className="mx-2">
+              Page {currentPage} of {totalPages}
+            </span>
+
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => handlePageChange(currentPage + 1)}
+              className="btn btn-outline btn-sm ml-2"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="text-center">
+          <p className="text-lg text-gray-500">No users found</p>
+        </div>
+      )}
     </div>
   );
 };

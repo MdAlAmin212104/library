@@ -10,6 +10,7 @@ const Page: React.FC = () => {
   
   // Type the useSelector return value correctly
   const { items, status, error } = useSelector((state: RootState) => state.data);
+  console.log(items, "this si itmes");
 
   useEffect(() => {
     dispatch(fetchData());
