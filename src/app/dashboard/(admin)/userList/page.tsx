@@ -4,6 +4,8 @@ import { UserRegister } from '@/app/type';
 import { AppDispatch, RootState } from '@/redux/store';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
+import { FaEdit } from 'react-icons/fa';
+import { MdDelete } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 
 const UserList: React.FC = () => {
@@ -36,21 +38,17 @@ const UserList: React.FC = () => {
           <table className="table">
             <thead>
               <tr>
-                <th>
-                  <input type="checkbox" className="checkbox" />
-                </th>
-                <th>Name</th>
-                <th>Job</th>
-                <th>Favorite Color</th>
-                <th></th>
+                <th>User Information</th>
+                <th>Department/Position</th>
+                <th>Batch</th>
+                <th>Update</th>
+                <th>Delete</th>
               </tr>
             </thead>
             <tbody>
               {items.map((user: UserRegister) => (
                 <tr key={user._id}>
-                  <th>
-                    <input type="checkbox" className="checkbox" />
-                  </th>
+                  
                   <td>
                     <div className="flex items-center gap-3">
                       <div className="avatar">
@@ -80,9 +78,12 @@ const UserList: React.FC = () => {
                       {user.roll}
                     </span>
                   </td>
-                  <td>Purple</td>
+                  <td>{user.batch || 'Teacher'}</td>
                   <th>
-                    <button className="btn btn-ghost btn-xs">Details</button>
+                    <button className="btn btn-ghost "><FaEdit className='text-3xl' /></button>
+                  </th>
+                  <th>
+                    <button className="btn btn-ghost"><MdDelete className='text-3xl text-red-500'/></button>
                   </th>
                 </tr>
               ))}
