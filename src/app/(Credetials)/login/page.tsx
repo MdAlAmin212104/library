@@ -1,7 +1,7 @@
 "use client";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
@@ -13,7 +13,9 @@ type Inputs = {
 
 const LoginPage = () => {
   const router = useRouter();
+  const searchParams = useSearchParams(); // Access query parameters
   const [passwordVisible, setPasswordVisible] = useState(false);
+
 
 
   const {
@@ -23,33 +25,36 @@ const LoginPage = () => {
   } = useForm<Inputs>();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    const {roll, password} = data;
+    const { roll, password } = data;
     try {
       const resp = await signIn("credentials", {
         roll,
         password,
-        redirect : false,
+        redirect: false,
       });
-      if(resp.status === 200) {
-        // Redirect to home page
-        router.push("/");
+
+      if (resp?.status === 200) {
+        // Get the 'from' query parameter or default to "/"
+        const redirectTo = searchParams.get("from") || "/";
+        router.push(redirectTo);
+      } else {
+        console.log("Login failed: ", resp?.error);
       }
-      
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
-    
-  }
+  };
 
   return (
     <div className="flex flex-col max-w-md p-6 rounded-md sm:p-10 dark:bg-gray-50 dark:text-gray-800 mx-auto my-10">
       <div className="mb-8 text-center">
         <h1 className="my-3 text-4xl font-bold">Sign in</h1>
-        <p className="text-sm dark:text-gray-600">Sign in to access your account</p>
+        <p className="text-sm dark:text-gray-600">
+          Sign in to access your account
+        </p>
       </div>
 
       <form className="space-y-12" onSubmit={handleSubmit(onSubmit)}>
-        {/* Roll/ID Number */}
         <div className="space-y-4">
           <div>
             <label htmlFor="roll" className="block mb-2 text-sm">
@@ -62,10 +67,13 @@ const LoginPage = () => {
               {...register("roll", { required: "Roll is required" })}
               className="w-full px-3 py-2 border rounded-md dark:border-gray-300 dark:bg-gray-50 dark:text-gray-800"
             />
-            {errors.roll && <span className="text-red-500 text-sm">{errors.roll.message}</span>}
+            {errors.roll && (
+              <span className="text-red-500 text-sm">
+                {errors.roll.message}
+              </span>
+            )}
           </div>
 
-          {/* Password */}
           <div>
             <label htmlFor="password" className="block mb-2 text-sm">
               Password
@@ -86,11 +94,14 @@ const LoginPage = () => {
                 {passwordVisible ? "👁️" : "👁️‍🗨️"}
               </button>
             </div>
-            {errors.password && <span className="text-red-500 text-sm">{errors.password.message}</span>}
+            {errors.password && (
+              <span className="text-red-500 text-sm">
+                {errors.password.message}
+              </span>
+            )}
           </div>
         </div>
 
-        {/* Submit & Links */}
         <div className="space-y-2">
           <div>
             <button
@@ -100,9 +111,15 @@ const LoginPage = () => {
               Sign in
             </button>
           </div>
-          <Link href="/register" className="block text-center text-sm dark:text-gray-600">
+          <Link
+            href="/register"
+            className="block text-center text-sm dark:text-gray-600"
+          >
             Don’t have an account yet?{" "}
-            <span className="hover:underline dark:text-violet-600">Sign up</span>.
+            <span className="hover:underline dark:text-violet-600">
+              Sign up
+            </span>
+            .
           </Link>
         </div>
       </form>

@@ -1,8 +1,7 @@
 "use client";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import bcrypt from "bcryptjs"; // Import bcryptjs for hashing passwords
-import { signIn } from "next-auth/react";
+import React, {useState } from "react";
+import bcrypt from "bcryptjs"; 
 import { UserRegister } from "@/app/type";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";

@@ -21,9 +21,10 @@ const initialState: DataState = {
 
 // Async Thunks
 export const fetchData = createAsyncThunk<UserRegister[]>('data/fetchData', async () => {
-  const response = await axios.get(`${baseUrl}/register/api`);
+  const response = await axios.get(`${baseUrl}/dashboard/userList/api`);
   return response.data;
 });
+
 
 export const addData = createAsyncThunk<UserRegister, UserRegister>('data/addData',async (newData, { rejectWithValue }) => {
     try {
@@ -54,6 +55,17 @@ const dataSlice = createSlice({
         state.status = 'failed';
         state.error = action.error.message || 'Something went wrong';
       })
+      // .addCase(fetchUserData.pending, (state) => {
+      //   state.status = 'loading';
+      // })
+      // .addCase(fetchUserData.fulfilled, (state, action: PayloadAction<UserRegister[]>) => {
+      //   state.status = 'succeeded';
+      //   state.items = action.payload;
+      // })
+      // .addCase(fetchUserData.rejected, (state, action) => {
+      //   state.status = 'failed';
+      //   state.error = action.error.message || 'Something went wrong';
+      // })
       .addCase(addData.pending, (state) => {
         state.status = 'loading';
       })

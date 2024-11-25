@@ -1,19 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getToken } from 'next-auth/jwt';
 
-export function middleware(req: NextRequest) {
-  // Check if the user is authenticated (example assumes token in cookies)
-  const token = req.cookies.get('authToken'); // Adjust key based on your auth setup
+export async function middleware(req: NextRequest) {
+  const token1 = req.cookies.get("next-auth.session-token");
+  if (!token1 && req.nextUrl.pathname !== "/login") {
+    const loginUrl = new URL("/login", req.url);
+    loginUrl.searchParams.set("from", req.nextUrl.pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+  // Get the session token from the request
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-  // If no token, redirect to login page
+  // If no token, redirect to the login page
   if (!token) {
     return NextResponse.redirect(new URL('/login', req.url));
   }
 
-  // Allow request to continue if authenticated
+  // If token exists, continue with the request
   return NextResponse.next();
 }
 
 // Apply middleware to specific routes
 export const config = {
-  matcher: ['/dashboard/:path*'], // Protect dashboard route and subroutes
+  matcher: ['/dashboard/:path*'], // Middleware will run for /dashboard and its sub-routes
 };
