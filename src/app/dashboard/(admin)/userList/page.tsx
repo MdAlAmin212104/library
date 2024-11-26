@@ -9,6 +9,7 @@ import { MdDelete } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 
 const UserList: React.FC = () => {
+
   const dispatch = useDispatch<AppDispatch>();
 
   const { items, totalPages, status, error } = useSelector((state: RootState) => state.data);
@@ -20,6 +21,10 @@ const UserList: React.FC = () => {
     setCurrentPage(newPage);
   };
 
+  const handleUpdate = (userId: string) => {
+    console.log(userId);
+  }
+
   useEffect(() => {
     dispatch(fetchData({ page: currentPage, limit: itemsPerPage }));
   }, [dispatch, currentPage]);
@@ -28,10 +33,6 @@ const UserList: React.FC = () => {
     <div>
       {status === 'loading' && <p>Loading...</p>}
       {status === 'failed' && <p>Error: {error}</p>}
-
-      <h1 className="text-center font-bold text-4xl my-6">
-        User List ({Array.isArray(items) ? items.length : 0})
-      </h1>
 
       {Array.isArray(items) && items.length > 0 ? (
         <div className="overflow-x-auto">
@@ -80,7 +81,7 @@ const UserList: React.FC = () => {
                   </td>
                   <td>{user.batch || 'Teacher'}</td>
                   <th>
-                    <button className="btn btn-ghost "><FaEdit className='text-3xl' /></button>
+                    <button onClick={()=>handleUpdate(user._id)} className="btn btn-ghost"><FaEdit className='text-3xl' /></button>
                   </th>
                   <th>
                     <button className="btn btn-ghost"><MdDelete className='text-3xl text-red-500'/></button>

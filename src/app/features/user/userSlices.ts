@@ -1,4 +1,3 @@
-
 import { UserRegister } from '@/app/type';
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
@@ -8,6 +7,8 @@ const baseUrl = process.env.NEXT_PUBLIC_BaseUrl;
 
 interface DataState {
   items: UserRegister[];
+  totalPages: number;
+  currentPage: number;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 }
@@ -21,11 +22,8 @@ const initialState: DataState = {
   error: null,
 };
 
-// Async Thunks
-// export const fetchData = createAsyncThunk<UserRegister[]>('data/fetchData', async () => {
-//   const response = await axios.get(`${baseUrl}/dashboard/userList/api`);
-//   return response.data;
-// });
+
+
 
 export const fetchData = createAsyncThunk<
   { users: UserRegister[]; totalPages: number; currentPage: number },
@@ -41,7 +39,7 @@ export const addData = createAsyncThunk<UserRegister, UserRegister>('data/addDat
     try {
         const response = await axios.post(`${baseUrl}/register/api`, newData);
         return response.data;
-    } catch (error: void) {
+    } catch (error: any) {
         // Handle error with rejectWithValue
         return rejectWithValue(error.response?.data || 'Failed to add data');
     }
