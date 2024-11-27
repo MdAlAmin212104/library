@@ -30,7 +30,6 @@ export const fetchData = createAsyncThunk<
   { page: number; limit: number }
 >('data/fetchData', async ({ page, limit }) => {
   const response = await axios.get(`${baseUrl}/dashboard/userList/api?page=${page}&limit=${limit}`);
-  console.log(response.data)
   return response.data;
 });
 
