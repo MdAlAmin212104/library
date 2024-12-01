@@ -66,14 +66,14 @@ const Slider: React.FC = () => {
                 Manage user
               </nav>
             </Link>
-            <Link href="/dashboard/faq">
+            <Link href="/dashboard/bookList">
               <nav className="w-full p-2 shadow-lg rounded-lg text-center bg-rose-100 mx-auto">
-                Payment
+              Manage Book
               </nav>
             </Link>
-            <Link href="/dashboard/shop">
+            <Link href="/dashboard/addBook">
               <nav className="w-full p-2 shadow-lg rounded-lg text-center bg-rose-100 mx-auto">
-                Survey List
+                Add Book
               </nav>
             </Link>
           </div>

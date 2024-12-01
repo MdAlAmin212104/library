@@ -30,11 +30,32 @@ const BookList = () => {
 
   console.log({ book: items, totalPages });
 
+  if (status === "loading") {
+    return (
+      <div className="grid md:grid-cols-3 justify-center gap-4">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <div
+            key={index}
+            className="flex flex-col m-8 rounded shadow-md w-60 sm:w-80 animate-pulse h-96"
+          >
+            <div className="h-48 rounded-t bg-gray-300"></div>
+            <div className="flex-1 px-4 py-8 space-y-4 bg-gray-50">
+              <div className="w-full h-6 rounded bg-gray-300"></div>
+              <div className="w-full h-6 rounded bg-gray-300"></div>
+              <div className="w-3/4 h-6 rounded bg-gray-300"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (status === "failed") {
+    return <p className="text-center text-red-500">Error: {error}</p>;
+  }
+
   return (
     <div>
-      {status === "loading" && <p>Loading...</p>}
-      {status === "failed" && <p>Error: {error}</p>}
-
       {Array.isArray(items) && items.length > 0 ? (
         <div>
           <div className="md:grid grid-cols-3 gap-6">
@@ -60,8 +81,8 @@ const BookList = () => {
                   </h2>
                   <p className="text-sm text-gray-600">
                     Description:{" "}
-                    {book.description.length > 50
-                      ? `${book.description.slice(0, 50)}...`
+                    {book.description.length > 80
+                      ? `${book.description.slice(0, 80)}... See more`
                       : book.description}
                   </p>
 
@@ -96,7 +117,7 @@ const BookList = () => {
                   <div className="card-actions justify-end mt-4">
                     <button
                       className="btn btn-primary"
-                      onClick={() => handleUpdate(book._id)}
+                      onClick={() => handleUpdate(book._id ?? '')}
                     >
                       Update
                     </button>
