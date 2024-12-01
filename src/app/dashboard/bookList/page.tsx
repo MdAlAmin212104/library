@@ -59,9 +59,10 @@ const BookList = () => {
                     Name: {book.title}
                   </h2>
                   <p className="text-sm text-gray-600">
-                  Description: {book.description.length > 50 
-    ? `${book.description.slice(0, 50)}...` 
-    : book.description}
+                    Description:{" "}
+                    {book.description.length > 50
+                      ? `${book.description.slice(0, 50)}...`
+                      : book.description}
                   </p>
 
                   {/* Additional Information */}
