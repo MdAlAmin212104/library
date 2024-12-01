@@ -38,6 +38,7 @@ export const addData = createAsyncThunk<UserRegister, UserRegister>('data/addDat
     try {
         const response = await axios.post(`${baseUrl}/register/api`, newData);
         return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
         // Handle error with rejectWithValue
         return rejectWithValue(error.response?.data || 'Failed to add data');

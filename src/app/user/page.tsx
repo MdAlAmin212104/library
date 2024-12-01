@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useEffect } from "react";
@@ -10,7 +11,7 @@ const Page: React.FC = () => {
   
   // Type the useSelector return value correctly
   const { items, status, error } = useSelector((state: RootState) => state.data);
-  console.log(items, "this si itmes");
+  console.log(items, "this si items");
 
   useEffect(() => {
     dispatch(fetchData());
