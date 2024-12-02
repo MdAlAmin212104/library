@@ -14,13 +14,7 @@ const BookList = () => {
     dispatch(deleteBook(bookId));
   };
   
-  // const handleUpdate = (bookId: string) => {
-  //   const updatedData = {
-  //     title: "Updated Title",
-  //     description: "Updated Description",
-  //   };
-  //   dispatch(updateBook({ bookId, updatedData }));
-  // };
+
 
   const { items, totalPages, status, error } = useSelector(
     (state: RootState) => state.book
@@ -40,7 +34,6 @@ const BookList = () => {
   
 
 
-  console.log({ book: items, totalPages });
 
   if (status === "loading") {
     return (

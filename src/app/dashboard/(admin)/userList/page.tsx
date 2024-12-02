@@ -1,5 +1,5 @@
 'use client';
-import { fetchData } from '@/app/features/user/userSlices';
+import { deleteUser, fetchData } from '@/app/features/user/userSlices';
 import { UserRegister } from '@/app/type';
 import { AppDispatch, RootState } from '@/redux/store';
 import Image from 'next/image';
@@ -21,8 +21,11 @@ const UserList: React.FC = () => {
     setCurrentPage(newPage);
   };
 
-  const handleUpdate = (userId: string) => {
-    console.log(userId);
+
+
+  const handleDeleteUser = (userId: string) => {
+    console.log(userId, 'delete user');
+    dispatch(deleteUser(userId));
   }
 
   useEffect(() => {
@@ -84,7 +87,7 @@ const UserList: React.FC = () => {
                     <button onClick={()=>handleUpdate(user._id)} className="btn btn-ghost"><FaEdit className='text-3xl' /></button>
                   </th>
                   <th>
-                    <button className="btn btn-ghost"><MdDelete className='text-3xl text-red-500'/></button>
+                    <button onClick={() => handleDeleteUser(user._id ?? '')} className="btn btn-ghost"><MdDelete className='text-3xl text-red-500'/></button>
                   </th>
                 </tr>
               ))}

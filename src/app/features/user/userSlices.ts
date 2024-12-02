@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { UserRegister } from '@/app/type';
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axios from "axios";
 
 const baseUrl = process.env.NEXT_PUBLIC_BaseUrl;
+const backEndBaseUrl = process.env.NEXT_PUBLIC_BackEnd_BaseUrl;
 
 
 interface DataState {
@@ -46,6 +48,35 @@ export const addData = createAsyncThunk<UserRegister, UserRegister>('data/addDat
     
 });
 
+console.log(baseUrl, 'this is an async function');
+
+export const deleteUser = createAsyncThunk<string, string>(
+  "data/deleteUser",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(`${backEndBaseUrl}/user/${userId}`);
+      if (response.status === 200) {
+        return userId; // Return the deleted user ID
+      }
+      throw new Error("Unexpected response status");
+    } catch (error: any) {
+      console.error("Error:", error);
+      let errorMessage = "Failed to delete the user.";
+      if (error.response) {
+        // Server responded with an error
+        errorMessage = error.response.data?.message || errorMessage;
+      } else if (error.request) {
+        // No response from server
+        errorMessage = "No response from the server.";
+      } else {
+        // Other errors (e.g., incorrect request setup)
+        errorMessage = error.message;
+      }
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
 // Slice
 const dataSlice = createSlice({
   name: 'data',
@@ -76,7 +107,19 @@ const dataSlice = createSlice({
       .addCase(addData.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
-      });
+      })
+      // Delete book cases
+      .addCase(deleteUser.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.items = state.items.filter((item) => item._id !== action.payload);
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload as string;
+      })
   },
 });
 
