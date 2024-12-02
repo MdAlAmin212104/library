@@ -32,6 +32,18 @@ export const fetchBook = createAsyncThunk<
   return response.data;
 });
 
+export const fetchSingleBook = createAsyncThunk<BookRegister, string>(
+  'data/fetchSingleBook',
+  async (bookId) => {
+    try {
+      const response = await axios.get(`${baseUrl}/book/${bookId}`);
+      return response.data;
+    } catch (error) {
+      throw new Error((error.response?.data?.message as string) || 'Failed to fetch book');
+    }
+  }
+);
+
 export const addBook = createAsyncThunk<BookRegister, BookRegister>(
   "data/addBook",
   async (newData, { rejectWithValue }) => {
@@ -115,6 +127,18 @@ const dataSlice = createSlice({
       .addCase(fetchBook.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message || "Something went wrong";
+      })
+      .addCase(fetchSingleBook.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(fetchSingleBook.fulfilled, (state, action: PayloadAction<BookRegister>) => {
+        state.status = 'succeeded';
+        state.items = [action.payload]; // Replace current items with the fetched book
+      })
+      .addCase(fetchSingleBook.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message || 'Failed to fetch book';
       })
       .addCase(addBook.pending, (state) => {
         state.status = "loading";

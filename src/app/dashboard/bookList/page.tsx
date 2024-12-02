@@ -1,5 +1,5 @@
 "use client";
-import { deleteBook, fetchBook, updateBook } from "@/app/features/book/bookSlices";
+import { deleteBook, fetchBook } from "@/app/features/book/bookSlices";
 import { BookRegister } from "@/app/type";
 import { AppDispatch, RootState } from "@/redux/store";
 import Image from "next/image";
@@ -14,13 +14,13 @@ const BookList = () => {
     dispatch(deleteBook(bookId));
   };
   
-  const handleUpdate = (bookId: string) => {
-    const updatedData = {
-      title: "Updated Title",
-      description: "Updated Description",
-    };
-    dispatch(updateBook({ bookId, updatedData }));
-  };
+  // const handleUpdate = (bookId: string) => {
+  //   const updatedData = {
+  //     title: "Updated Title",
+  //     description: "Updated Description",
+  //   };
+  //   dispatch(updateBook({ bookId, updatedData }));
+  // };
 
   const { items, totalPages, status, error } = useSelector(
     (state: RootState) => state.book
@@ -127,12 +127,12 @@ const BookList = () => {
 
                   {/* Action Buttons */}
                   <div className="card-actions justify-end mt-4">
-                  <Link href='/dashboard/updateBook'
-    className="btn btn-primary"
-    onClick={() => handleUpdate(book._id ?? '')}
-  >
-    Update
-  </Link>
+                  <Link 
+  href={{ pathname: '/dashboard/updateBook', query: { id: book._id } }}
+  className="btn btn-primary"
+>
+  Update
+</Link>
   <button
     onClick={() => handleDelete(book._id ?? '')}
     className="btn btn-error"
