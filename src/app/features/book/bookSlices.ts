@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BookRegister } from "@/app/type";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
@@ -50,6 +51,41 @@ export const addBook = createAsyncThunk<BookRegister, BookRegister>(
   }
 );
 
+// bookSlices.ts
+export const deleteBook = createAsyncThunk<string, string>(
+  "data/deleteBook",
+  async (bookId, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(`${baseUrl}/book/${bookId}`);
+      if (response.status === 200) {
+        return bookId; // Return the deleted book ID
+      }
+      throw new Error("Unexpected response status");
+    } catch (error: any) {
+      console.error("Error:", error);
+      const errorMessage = error.response?.data?.message || "Failed to delete the book.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+export const updateBook = createAsyncThunk<
+  BookRegister,
+  { bookId: string; updatedData: Partial<BookRegister> }
+>("data/updateBook", async ({ bookId, updatedData }, { rejectWithValue }) => {
+  try {
+    const response = await axios.put(`${baseUrl}/book/${bookId}`, updatedData);
+    if (response.status === 200) {
+      return response.data; // Return the updated book data
+    }
+    throw new Error("Unexpected response status");
+  } catch (error: any) {
+    console.error("Error:", error);
+    const errorMessage = error.response?.data?.message || "Failed to update the book.";
+    return rejectWithValue(errorMessage);
+  }
+});
+
 // Slice
 const dataSlice = createSlice({
   name: "data",
@@ -91,6 +127,33 @@ const dataSlice = createSlice({
         }
       )
       .addCase(addBook.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload as string;
+      })
+      // Delete book cases
+      .addCase(deleteBook.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(deleteBook.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.items = state.items.filter((item) => item._id !== action.payload);
+      })
+      .addCase(deleteBook.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload as string;
+      })
+      // Update book cases
+      .addCase(updateBook.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(updateBook.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        const index = state.items.findIndex((item) => item._id === action.payload._id);
+        if (index !== -1) {
+          state.items[index] = action.payload; // Update the specific book
+        }
+      })
+      .addCase(updateBook.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload as string;
       });

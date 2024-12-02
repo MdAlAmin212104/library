@@ -1,32 +1,44 @@
 "use client";
-import { fetchBook } from "@/app/features/book/bookSlices";
+import { deleteBook, fetchBook, updateBook } from "@/app/features/book/bookSlices";
 import { BookRegister } from "@/app/type";
 import { AppDispatch, RootState } from "@/redux/store";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const BookList = () => {
   const dispatch = useDispatch<AppDispatch>();
 
+  const handleDelete = (bookId: string) => {
+    dispatch(deleteBook(bookId));
+  };
+  
+  const handleUpdate = (bookId: string) => {
+    const updatedData = {
+      title: "Updated Title",
+      description: "Updated Description",
+    };
+    dispatch(updateBook({ bookId, updatedData }));
+  };
+
   const { items, totalPages, status, error } = useSelector(
     (state: RootState) => state.book
   );
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 9;
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
   };
 
-  const handleUpdate = (userId: string) => {
-    console.log({ userId });
-  };
 
   useEffect(() => {
     dispatch(fetchBook({ page: currentPage, limit: itemsPerPage }));
   }, [dispatch, currentPage]);
+  
+
 
   console.log({ book: items, totalPages });
 
@@ -115,13 +127,18 @@ const BookList = () => {
 
                   {/* Action Buttons */}
                   <div className="card-actions justify-end mt-4">
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => handleUpdate(book._id ?? '')}
-                    >
-                      Update
-                    </button>
-                    <button className="btn btn-error">Delete</button>
+                  <Link href='/dashboard/updateBook'
+    className="btn btn-primary"
+    onClick={() => handleUpdate(book._id ?? '')}
+  >
+    Update
+  </Link>
+  <button
+    onClick={() => handleDelete(book._id ?? '')}
+    className="btn btn-error"
+  >
+    Delete
+  </button>
                   </div>
                 </div>
               </div>
