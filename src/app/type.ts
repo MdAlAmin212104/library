@@ -14,6 +14,7 @@ export interface UserRegister {
   role: string;
 }
 export interface BookRegister {
+  bookId?: string;
   _id?: string;
   title: string;
   author: string;
@@ -25,7 +26,7 @@ export interface BookRegister {
   totalCopies: number;
   availableCopies: number;
   publicationYear: number;
-  bookCoverUrl: string;
+  bookCoverUrl?: string;
   description: string;
   files?: string;
 }

@@ -86,7 +86,7 @@ export const updateBook = createAsyncThunk<
   { bookId: string; updatedData: Partial<BookRegister> }
 >("data/updateBook", async ({ bookId, updatedData }, { rejectWithValue }) => {
   try {
-    const response = await axios.put(`${baseUrl}/book/${bookId}`, updatedData);
+    const response = await axios.patch(`${baseUrl}/book/${bookId}`, updatedData);
     if (response.status === 200) {
       return response.data; // Return the updated book data
     }
