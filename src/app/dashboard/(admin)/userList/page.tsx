@@ -3,6 +3,7 @@ import { deleteUser, fetchData } from '@/app/features/user/userSlices';
 import { UserRegister } from '@/app/type';
 import { AppDispatch, RootState } from '@/redux/store';
 import Image from 'next/image';
+import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { FaEdit } from 'react-icons/fa';
 import { MdDelete } from 'react-icons/md';
@@ -20,6 +21,11 @@ const UserList: React.FC = () => {
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
   };
+
+
+  // const handleUpdate = (bookId: string) => {
+  //  console.log(bookId);
+  // }
 
 
 
@@ -84,7 +90,7 @@ const UserList: React.FC = () => {
                   </td>
                   <td>{user.batch || 'Teacher'}</td>
                   <th>
-                    <button onClick={()=>handleUpdate(user._id)} className="btn btn-ghost"><FaEdit className='text-3xl' /></button>
+                    <Link href={{ pathname: '/dashboard/updateUser', query: { id: user._id } }} className="btn btn-ghost"><FaEdit className='text-3xl' /></Link>
                   </th>
                   <th>
                     <button onClick={() => handleDeleteUser(user._id ?? '')} className="btn btn-ghost"><MdDelete className='text-3xl text-red-500'/></button>

@@ -35,6 +35,18 @@ export const fetchData = createAsyncThunk<
   return response.data;
 });
 
+export const fetchSingleUser = createAsyncThunk<UserRegister, string>(
+  'data/fetchSingleBook',
+  async (userId) => {
+    try {
+      const response = await axios.get(`${backEndBaseUrl}/user/${userId}`);
+      return response.data;
+    } catch (error) {
+      throw new Error((error.response?.data?.message as string) || 'Failed to fetch book');
+    }
+  }
+);
+
 
 export const addData = createAsyncThunk<UserRegister, UserRegister>('data/addData',async (newData, { rejectWithValue }) => {
     try {
@@ -48,7 +60,26 @@ export const addData = createAsyncThunk<UserRegister, UserRegister>('data/addDat
     
 });
 
-console.log(baseUrl, 'this is an async function');
+export const updateUser = createAsyncThunk<
+  UserRegister,
+  { userId: string; updatedData: Partial<UserRegister> }
+>("data/updateUser", async ({ userId, updatedData }, { rejectWithValue }) => {
+  try {
+    console.log(userId, 'this is updated', updatedData);
+    const response = await axios.patch(`${backEndBaseUrl}/user/${userId}`, updatedData);
+    console.log(response);
+    if (response.status === 200) {
+      return response.data; // Return the updated book data
+    }
+    throw new Error("Unexpected response status");
+  } catch (error: any) {
+    console.error("Error:", error);
+    const errorMessage = error.response?.data?.message || "Failed to update the user.";
+    return rejectWithValue(errorMessage);
+  }
+});
+
+
 
 export const deleteUser = createAsyncThunk<string, string>(
   "data/deleteUser",
@@ -97,6 +128,18 @@ const dataSlice = createSlice({
         state.status = 'failed';
         state.error = action.error.message || 'Something went wrong';
       })
+      .addCase(fetchSingleUser.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(fetchSingleUser.fulfilled, (state, action: PayloadAction<UserRegister>) => {
+        state.status = 'succeeded';
+        state.items = [action.payload]; // Replace current items with the fetched book
+      })
+      .addCase(fetchSingleUser.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message || 'Failed to fetch user';
+      })
       .addCase(addData.pending, (state) => {
         state.status = 'loading';
       })
@@ -106,6 +149,21 @@ const dataSlice = createSlice({
       })
       .addCase(addData.rejected, (state, action) => {
         state.status = 'failed';
+        state.error = action.payload as string;
+      })
+      // Update update cases
+      .addCase(updateUser.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        const index = state.items.findIndex((item) => item._id === action.payload._id);
+        if (index !== -1) {
+          state.items[index] = action.payload; // Update the specific book
+        }
+      })
+      .addCase(updateUser.rejected, (state, action) => {
+        state.status = "failed";
         state.error = action.payload as string;
       })
       // Delete book cases

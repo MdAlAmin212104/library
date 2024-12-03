@@ -14,6 +14,15 @@ export interface UserRegister {
   role: string;
 }
 export interface BookRegister {
+  roll: string;
+  department: string;
+  batch: string;
+  position: string;
+  profilePictureUrl: string;
+  role: string;
+  phone: string;
+  name: string;
+  email: string;
   bookId?: string;
   _id?: string;
   title: string;

@@ -28,7 +28,6 @@ const UpdateBookPage = () => {
     bookCoverUrl: '',
   });
 
-  const [updateSuccess, setUpdateSuccess] = useState(false);
 
   useEffect(() => {
     if (bookId) {
