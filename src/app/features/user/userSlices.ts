@@ -65,9 +65,7 @@ export const updateUser = createAsyncThunk<
   { userId: string; updatedData: Partial<UserRegister> }
 >("data/updateUser", async ({ userId, updatedData }, { rejectWithValue }) => {
   try {
-    console.log(userId, 'this is updated', updatedData);
     const response = await axios.patch(`${backEndBaseUrl}/user/${userId}`, updatedData);
-    console.log(response);
     if (response.status === 200) {
       return response.data; // Return the updated book data
     }

@@ -38,7 +38,7 @@ const LoginPage = () => {
         const redirectTo = searchParams.get("from") || "/";
         router.push(redirectTo);
       } else {
-        console.log("Login failed: ", resp?.error);
+        return resp?.error;
       }
     } catch (err) {
       console.error(err);

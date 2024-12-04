@@ -23,14 +23,7 @@ const UserList: React.FC = () => {
   };
 
 
-  // const handleUpdate = (bookId: string) => {
-  //  console.log(bookId);
-  // }
-
-
-
   const handleDeleteUser = (userId: string) => {
-    console.log(userId, 'delete user');
     dispatch(deleteUser(userId));
   }
 

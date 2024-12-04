@@ -41,7 +41,6 @@ const AddBook: React.FC = () => {
         ...prevData,
         files: file, // Store the file for later upload
       }));
-      console.log("Selected file:", file);
     }
   };
 
@@ -63,14 +62,12 @@ const AddBook: React.FC = () => {
         // If upload is successful, set the image URL in the form data
         const imageUrl = response.data.data.url;
         setValue("bookCoverUrl", imageUrl); // Save the image URL in the form state
-        console.log("Image uploaded successfully:", imageUrl);
 
         // Now submit the rest of the form data with the image URL
         const bookData = {
           ...data,
           bookCoverUrl: imageUrl, // Add the image URL to the form data
         };
-        console.log(bookData, "this is the book cover");
 
         // Dispatch the action to add the book
         const result = await dispatch(addBook(bookData));
@@ -81,12 +78,12 @@ const AddBook: React.FC = () => {
         } else {
           alert("Failed to add the book."); // Set error message
         }
-        console.log(result, "Book added successfully");
       } catch (error) {
         console.error("Error uploading image:", error);
       }
     } else {
       alert("Please select an image for the book cover");
+    
     }
   };
 

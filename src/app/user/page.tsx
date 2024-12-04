@@ -11,7 +11,6 @@ const Page: React.FC = () => {
   
   // Type the useSelector return value correctly
   const { items, status, error } = useSelector((state: RootState) => state.data);
-  console.log(items, "this si items");
 
   useEffect(() => {
     dispatch(fetchData());

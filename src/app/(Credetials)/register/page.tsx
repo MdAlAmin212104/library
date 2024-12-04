@@ -140,7 +140,6 @@ const RegisterForm: React.FC = () => {
           hashedPassword,
           role: isTeacher? "teacher" : "student",
         };
-        console.log(formValueLink, "Password and confirmPassword");
 
         dispatch(addData(formValueLink))
         setFormData({

@@ -50,7 +50,6 @@ export const addBook = createAsyncThunk<BookRegister, BookRegister>(
     try {
       const response = await axios.post(`${baseUrl}/book`, newData);
       if (response.status === 200 || response.status === 201) {
-        console.log("Response Data:", response.data);
         return response.data;
       }
       throw new Error("Unexpected response status");
