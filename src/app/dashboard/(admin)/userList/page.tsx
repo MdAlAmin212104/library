@@ -42,6 +42,10 @@ const UserList: React.FC = () => {
     <div>
       {status === 'loading' && <p>Loading...</p>}
       {status === 'failed' && <p>Error: {error}</p>}
+      <div className='text-right'>
+
+      <Link href='/register' className='btn btn-primary'>Add User</Link>
+      </div>
 
       {Array.isArray(items) && items.length > 0 ? (
         <div className="overflow-x-auto">
