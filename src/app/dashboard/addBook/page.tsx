@@ -11,7 +11,6 @@ const AddBook: React.FC = () => {
   const {
     control,
     handleSubmit,
-    formState: { errors },
     setValue,
     reset,
   } = useForm();
@@ -115,11 +114,11 @@ const AddBook: React.FC = () => {
             )}
             rules={{ required: "Title is required" }}
           />
-          {errors.title && (
+          {/* {errors.title && (
             <p className="text-red-600 text-sm">
               {errors.title?.message}
             </p>
-          )}
+          )} */}
         </div>
 
         {/* Author */}
