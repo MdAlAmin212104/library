@@ -2,6 +2,7 @@
 import { UserRegister } from '@/app/type';
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from "axios";
+import Swal from 'sweetalert2';
 
 const baseUrl = process.env.NEXT_PUBLIC_BaseUrl;
 const backEndBaseUrl = process.env.NEXT_PUBLIC_BackEnd_BaseUrl;
@@ -77,20 +78,43 @@ export const updateUser = createAsyncThunk<
   }
 });
 
-
-
 export const deleteUser = createAsyncThunk<string, string>(
   "data/deleteUser",
   async (userId, { rejectWithValue }) => {
     try {
+      // Display the confirmation dialog
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      });
+
+      if (!result.isConfirmed) {
+        return rejectWithValue("User deletion canceled by the user.");
+      }
+
+      // Proceed with the delete request
       const response = await axios.delete(`${backEndBaseUrl}/user/${userId}`);
+
       if (response.status === 200) {
+        // Show success message
+        await Swal.fire({
+          title: "Deleted!",
+          text: "The user has been deleted.",
+          icon: "success"
+        });
         return userId; // Return the deleted user ID
       }
+
       throw new Error("Unexpected response status");
     } catch (error: any) {
       console.error("Error:", error);
       let errorMessage = "Failed to delete the user.";
+
       if (error.response) {
         // Server responded with an error
         errorMessage = error.response.data?.message || errorMessage;
@@ -101,10 +125,22 @@ export const deleteUser = createAsyncThunk<string, string>(
         // Other errors (e.g., incorrect request setup)
         errorMessage = error.message;
       }
+
+      // Show error message
+      await Swal.fire({
+        title: "Error!",
+        text: errorMessage,
+        icon: "error"
+      });
+      
       return rejectWithValue(errorMessage);
     }
   }
 );
+
+
+
+
 
 // Slice
 const dataSlice = createSlice({

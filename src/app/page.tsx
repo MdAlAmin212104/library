@@ -1,6 +1,5 @@
 "use client";
 import Image from "next/image";
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BookRegister } from "./type";
@@ -26,7 +25,7 @@ export default function Home() {
 
   if (status === "loading") {
     return (
-      <div className="grid md:grid-cols-3 justify-center gap-4">
+      <div className="grid md:grid-cols-3 justify-center gap-4 container mx-auto">
         {Array.from({ length: 6 }).map((_, index) => (
           <div
             key={index}

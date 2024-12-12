@@ -1,11 +1,11 @@
 import React from 'react';
 
-const AboutPage = () => {
+const BookListPage = () => {
     return (
         <div className='text-center my-10'>
-            <h1>this is About Page section</h1>
+            this is book List section
         </div>
     );
 };
 
-export default AboutPage;
+export default BookListPage;
