@@ -2,6 +2,7 @@
 import { BookRegister } from "@/app/type";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const baseUrl = process.env.NEXT_PUBLIC_BackEnd_BaseUrl;
 
@@ -63,22 +64,132 @@ export const addBook = createAsyncThunk<BookRegister, BookRegister>(
 );
 
 // bookSlices.ts
-export const deleteBook = createAsyncThunk<string, string>(
+
+// export const deleteBook = createAsyncThunk<string, string>(
+//   "data/deleteBook",
+//   async (bookId, { rejectWithValue }) => {
+//     try {
+//       // Display the confirmation dialog
+//       const result = await Swal.fire({
+//         title: "Are you sure?",
+//         text: "You won't be able to revert this!",
+//         icon: "warning",
+//         showCancelButton: true,
+//         confirmButtonColor: "#3085d6",
+//         cancelButtonColor: "#d33",
+//         confirmButtonText: "Yes, delete it!"
+//       });
+
+//       if (!result.isConfirmed) {
+//         return rejectWithValue("Book deletion canceled by the user.");
+//       }
+
+//       const response = await axios.delete(`${baseUrl}/book/${bookId}`);
+
+//       if (response.status === 200) {
+//         // Show success message
+//         await Swal.fire({
+//           title: "Deleted!",
+//           text: "The book has been deleted.",
+//           icon: "success"
+//         });
+//         return bookId; // Return the deleted book ID
+//       }
+
+//       throw new Error("Unexpected response status");
+//     } catch (error: any) {
+//       console.error("Error:", error);
+//       let errorMessage = "Failed to delete the book.";
+
+//       if (error.response) {
+//         // Server responded with an error
+//         errorMessage = error.response.data?.message || errorMessage;
+//       } else if (error.request) {
+//         // No response from server
+//         errorMessage = "No response from the server.";
+//       } else {
+//         // Other errors (e.g., incorrect request setup)
+//         errorMessage = error.message;
+//       }
+
+//       // Show error message
+//       await Swal.fire({
+//         title: "Error!",
+//         text: errorMessage,
+//         icon: "error"
+//       });
+      
+//       return rejectWithValue(errorMessage);
+//     }
+//   }
+// );
+
+export const deleteBook = createAsyncThunk<string | null, string>(
   "data/deleteBook",
   async (bookId, { rejectWithValue }) => {
     try {
-      const response = await axios.delete(`${baseUrl}/book/${bookId}`);
-      if (response.status === 200) {
-        return bookId; // Return the deleted book ID
+      // Display the confirmation dialog
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      });
+
+      if (!result.isConfirmed) {
+        // User canceled the action, exit gracefully without rejecting an error
+        await Swal.fire({
+          title: "Cancelled",
+          text: "The book deletion was canceled.",
+          icon: "info"
+        });
+        return null; // ✅ Return null explicitly
       }
+
+      // Send the delete request
+      const response = await axios.delete(`${baseUrl}/book/${bookId}`);
+
+      if (response.status === 200 || response.status === 204) {
+        // Show success message
+        await Swal.fire({
+          title: "Deleted!",
+          text: "The book has been deleted.",
+          icon: "success"
+        });
+        return bookId; // Return the deleted book ID as success response
+      }
+
       throw new Error("Unexpected response status");
     } catch (error: any) {
       console.error("Error:", error);
-      const errorMessage = error.response?.data?.message || "Failed to delete the book.";
+      let errorMessage = "Failed to delete the book.";
+
+      if (error.response) {
+        // Server responded with an error
+        errorMessage = error.response.data?.message || errorMessage;
+      } else if (error.request) {
+        // No response from server
+        errorMessage = "No response from the server.";
+      } else {
+        // Other errors (e.g., incorrect request setup)
+        errorMessage = error.message;
+      }
+
+      // Show error message
+      await Swal.fire({
+        title: "Error!",
+        text: errorMessage,
+        icon: "error"
+      });
+
       return rejectWithValue(errorMessage);
     }
   }
 );
+
 
 export const updateBook = createAsyncThunk<
   BookRegister,
