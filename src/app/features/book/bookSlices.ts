@@ -39,7 +39,7 @@ export const fetchSingleBook = createAsyncThunk<BookRegister, string>(
     try {
       const response = await axios.get(`${baseUrl}/book/${bookId}`);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       throw new Error((error.response?.data?.message as string) || 'Failed to fetch book');
     }
   }

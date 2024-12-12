@@ -10,7 +10,6 @@ export async function middleware(req: NextRequest) {
   }
   // Get the session token from the request
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-  console.log(token, 'this is token');
 
   // If no token, redirect to the login page
   if (!token) {

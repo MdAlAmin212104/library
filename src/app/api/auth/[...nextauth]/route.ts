@@ -10,6 +10,8 @@ interface User {
   hashedPassword: string;
   name: string;
   photo?: string;
+  role?: string;
+
   // Add any other fields from your user schema
 }
 
@@ -72,6 +74,7 @@ const handler = NextAuth({
       token.department = user.department;
       token.position = user.position;
       token.batch = user.batch;
+      token.role = user.role;
 
     }
     return token;
@@ -86,6 +89,7 @@ const handler = NextAuth({
       session.user.department = token.department;
       session.user.position = token.position;
       session.user.batch = token.batch; 
+      session.user.role = token.role;
     }
     return session;
   },

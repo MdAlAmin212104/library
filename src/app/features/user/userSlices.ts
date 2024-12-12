@@ -42,7 +42,7 @@ export const fetchSingleUser = createAsyncThunk<UserRegister, string>(
     try {
       const response = await axios.get(`${backEndBaseUrl}/user/${userId}`);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       throw new Error((error.response?.data?.message as string) || 'Failed to fetch book');
     }
   }
