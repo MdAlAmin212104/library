@@ -2,69 +2,61 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
 export async function middleware(req: NextRequest) {
-  // Get the session token from the request (extract role from the token)
+  // 1️⃣ Get the session token from the request (Extract role from the token)
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-  // Redirect to login if no token is found and the user is not trying to access the login page
-  if (!token && req.nextUrl.pathname !== "/login") {
-    const loginUrl = new URL("/login", req.url);
-    loginUrl.searchParams.set("from", req.nextUrl.pathname);
+  // 2️⃣ If no token is found, redirect to the login page
+  if (!token) {
+    const loginUrl = new URL('/login', req.url);
+    loginUrl.searchParams.set('from', req.nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // If no token is found, redirect to the login page
-  if (!token) {
-    return NextResponse.redirect(new URL('/login', req.url));
-  }
-
-  // Extract the role from the token
+  // 3️⃣ Extract the role from the token
   const userRole = token.role;
-  console.log(userRole, "userRole");
+  console.log(userRole, 'userRole');
 
-  // Define role-based route access control
+  // 4️⃣ Define role-based route access control
   const roleBasedAccess = {
     admin: ['/dashboard', '/dashboard/userList', '/dashboard/bookList', '/dashboard/about', '/dashboard/addBook'],
-    teacher: ['/teacher', '/teacher/about'], // teacher can access these routes
+    teacher: ['/teacher', '/teacher/about'], // teacher routes
     student: ['/student', '/dashboard/overview'], // student routes
   };
 
-  // Get the path the user is trying to access
+  // 5️⃣ Get the path the user is trying to access
   const currentPath = req.nextUrl.pathname;
 
-  // Check if the role is allowed to access the current route
-  const isAuthorized = Object.entries(roleBasedAccess).some(([role, paths]) => {
-    if (userRole === role) {
-      // Check if the user's role allows access to this path
-      return paths.some(path => currentPath.startsWith(path));
-    }
-    return false;
-  });
+  // 6️⃣ Check if the user's role allows access to the current route
+  const isAuthorized = roleBasedAccess[userRole]?.some(path => currentPath.startsWith(path)) ?? false;
 
-  // If user is not authorized, redirect to the unauthorized page
+  // 7️⃣ If user is not authorized, redirect to the home page
   if (!isAuthorized) {
-    return NextResponse.redirect(new URL('/unauthorized', req.url)); // Redirect to unauthorized page
+    return NextResponse.redirect(new URL('/', req.url)); // Redirect to home page
   }
 
-  // Redirect based on user role (differentiated routes based on the role)
+  // 8️⃣ Redirect users to their respective dashboards if they visit /dashboard
   const redirectBasedOnRole = {
-    admin: '/admin-dashboard',  // Redirect admin to a specific dashboard
-    teacher: '/teacher-dashboard', // Redirect teacher to a teacher's dashboard
-    student: '/student-dashboard', // Redirect student to a student dashboard
+    admin: '/admin',
+    teacher: '/teacher-dashboard',
+    student: '/student-dashboard',
   };
 
-  // If the user is logging in (i.e., on /dashboard), check their role and redirect
   if (currentPath === '/dashboard') {
     const redirectUrl = redirectBasedOnRole[userRole];
     if (redirectUrl) {
-      return NextResponse.redirect(new URL(redirectUrl, req.url));  // Redirect based on role
+      return NextResponse.redirect(new URL(redirectUrl, req.url));
     }
   }
 
-  // If token exists and role is authorized, continue with the request
+  // 9️⃣ Allow access to the route
   return NextResponse.next();
 }
 
-// Apply middleware to specific routes
+// 🔥 Apply middleware to specific routes
 export const config = {
-  matcher: ['/dashboard/:path*'], // Middleware will run for /dashboard and its sub-routes
+  matcher: [
+    '/dashboard/:path*', // Protect dashboard and its sub-routes
+    '/teacher/:path*',   // Protect teacher routes
+    '/student/:path*',   // Protect student routes
+  ],
 };

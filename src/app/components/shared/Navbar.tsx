@@ -6,7 +6,14 @@ import React from "react";
 
 const Navbar = () => {
   const { data: session, status } = useSession();
-
+  console.log(session);
+  const { role } = session?.user ?? { role: null };
+  
+  const dashboardLink = role === 'admin' 
+    ? '/dashboard/home' 
+    : role === 'teacher' 
+    ? '/teacher' 
+    : '/student'; // Default fallback link (optional)
 
   const link = (
     <>
@@ -44,13 +51,15 @@ const Navbar = () => {
               {link}
             </ul>
           </div>
-          <Link href='/' className="btn btn-ghost text-xl"><Image
-            src="/image/Logo.jpg"
-            width={40}
-            height={40}
-            alt="Logo picture"
-            className="rounded-full"
-          /></Link>
+          <Link href='/' className="btn btn-ghost text-xl">
+            <Image
+              src="/image/Logo.jpg"
+              width={40}
+              height={40}
+              alt="Logo picture"
+              className="rounded-full"
+            />
+          </Link>
         </div>
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1">
@@ -91,7 +100,7 @@ const Navbar = () => {
                       width={50}
                       height={50}
                       src={session.user?.photo as string || 
-                        "https://lh3.googleusercontent.com/a/ACg8ocKfSrgZFBvoQ6s12ZB8gHSg3E625KGpnaiYthDiKIfNqh1g62wg=s96-c"} // Ensure `photo` is a string or fallback to a default
+                        "https://lh3.googleusercontent.com/a/ACg8ocKfSrgZFBvoQ6s12ZB8gHSg3E625KGpnaiYthDiKIfNqh1g62wg=s96-c"} 
                       alt="profile photo"
                     />
                   </div>
@@ -106,7 +115,7 @@ const Navbar = () => {
                       <span className="badge">New</span>
                     </Link>
                   </li>
-                  <li><Link href='/dashboard'>Dashboard</Link></li>
+                  <li><Link href={dashboardLink}>Dashboard</Link></li>
                   <li><span onClick={() => signOut()}>Logout</span></li>
                 </ul>
               </div>
