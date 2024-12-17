@@ -6,7 +6,6 @@ import React from "react";
 
 const Navbar = () => {
   const { data: session, status } = useSession();
-  console.log(session);
   const { role } = session?.user ?? { role: null };
   
   const dashboardLink = role === 'admin' 
