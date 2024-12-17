@@ -39,3 +39,13 @@ export interface BookRegister {
   description: string;
   files?: string;
 }
+
+
+export interface BookBrowsing {
+  userRoll: string;
+  bookId: string;
+  startDate : string;
+  endDate : string;
+  totalDays: number;
+  status: string;
+}

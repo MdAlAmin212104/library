@@ -6,6 +6,7 @@ import { BookRegister } from "./type";
 import { fetchBook } from "./features/book/bookSlices";
 import { AppDispatch, RootState } from "@/redux/store";
 import { useSession } from "next-auth/react";
+import { addBookBrowsing } from "./features/bookBrowsing/bookBrowsingSlice";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -38,7 +39,7 @@ export default function Home() {
     setEndDate(""); // Reset end date
   };
 
-  const handleSubmit = () => {
+  const handleSubmit =  async() => {
     if (!startDate || !endDate) {
       alert("Please select both start and end dates.");
       return;
@@ -54,8 +55,6 @@ export default function Home() {
       return;
     }
   
-    console.log(`Total Days: ${differenceInDays + 1} day(s)`); // +1 to include both start and end date
-  
     if (roll && selectedBook?._id) {
       const bookingData = {
         userRoll: roll,
@@ -65,9 +64,11 @@ export default function Home() {
         totalDays: differenceInDays + 1, // Include total days in booking data
         status: "pending"
       };
-  
-      console.log("Booking Data:", bookingData);
-      closeModal();
+      const result = await dispatch(addBookBrowsing(bookingData))
+      if (result.type === "data/addBookBrowsing/fulfilled") {
+        closeModal();
+        alert("Booking status updated.")
+      }
     } else {
       alert("User roll or book ID is missing.");
     }

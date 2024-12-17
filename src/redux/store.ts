@@ -2,11 +2,13 @@
 import { configureStore } from '@reduxjs/toolkit'
 import userReducer from '../app/features/user/userSlices';
 import BookReducer from '../app/features/book/bookSlices';
+import BookBrowsingReducer from '../app/features/bookBrowsing/bookBrowsingSlice';
 
 export const store = configureStore({
   reducer: {
     data : userReducer,
     book: BookReducer,
+    bookBrowsing : BookBrowsingReducer,
   },
 })
 
